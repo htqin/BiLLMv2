@@ -51,13 +51,17 @@ bash scripts/run_ptq_ft.sh \
 
 ## 方法设计
 
-BiLLMv2 以 BiLLM 的结构化二值表示为起点，并围绕量化器与校准流程作了三项改进。
+BiLLMv2 以 BiLLM 的结构化二值表示为起点，并围绕量化器与校准流程组织为五个核心组成部分。
 
-1. **量化器。** 相比 BiLLM，BiLLMv2 使用 residual-Hessian 显著性、有限候选的全局非对称分裂搜索、加权尺度求解、静态激活量化与紧凑 artifact 打包。正式配置还在被选择的 `o_proj` 和 `down_proj` 分支使用 functional-branch INT8 low-rank 残差补偿。纯 PTQ 在 `torch.no_grad()` 下执行，不更新原模型权重。
+1. **量化器。** 相比 BiLLM，BiLLMv2 使用 residual-Hessian 显著性、有限候选的全局非对称分裂搜索、加权尺度求解、静态激活量化与紧凑 artifact 打包。纯 PTQ 在 `torch.no_grad()` 下执行，不更新原模型权重。
 
-2. **校准策略。** BiLLMv2 不将校准序列视为可互换样本，而是先提取 activation 或 joint quantization-error 特征，再进行逐层重建。正式 preset 从 512 条候选序列中基于 activation 特征以 k-center 选择 128 条代表性样本。
+2. **INT8 因子存储。** 对被选中的低秩因子，BiLLMv2 将因子本体量化为 INT8，并保存对应尺度，从而将补偿项以紧凑且可重载的形式写入 artifact。
 
-3. **校准样本优化。** 除 k-center 外，BiLLMv2 还提供 D-optimal 与 hybrid selector，在覆盖度和信息增益之间取舍。相较 BiLLM 的直接校准使用方式，BiLLMv2 将子集选择显式化并可复现：模型、数据集、随机种子、特征配置与选中索引均随 artifact 保存。
+3. **低秩残差补偿。** 正式配置在 `o_proj` 和 `down_proj` 分支执行 functional-branch low-rank 搜索，并从候选秩中选择补偿量，以恢复二值量化后的功能误差。
+
+4. **校准策略。** BiLLMv2 不将校准序列视为可互换样本，而是先提取 activation 或 joint quantization-error 特征，再进行逐层重建。正式 preset 从 512 条候选序列中基于 activation 特征以 k-center 选择 128 条代表性样本。
+
+5. **校准样本优化。** 除 k-center 外，BiLLMv2 还提供 D-optimal 与 hybrid selector，在覆盖度和信息增益之间取舍。相较 BiLLM 的直接校准使用方式，BiLLMv2 将子集选择显式化并可复现：模型、数据集、随机种子、特征配置与选中索引均随 artifact 保存。
 
 artifact 目录包含配置、校准索引、打包二值载荷、低秩因子、旋转参数、BPW 统计和指标，可通过 `billmv2.utils.artifacts.load_billmv2_artifacts` 与 `apply_billmv2_artifacts` 重载。
 
