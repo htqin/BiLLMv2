@@ -1,0 +1,1 @@
+"""Calibration-only compact refinement."""
