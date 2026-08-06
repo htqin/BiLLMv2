@@ -2,10 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BILLM_PATH="${1:-"$ROOT_DIR/../BiLLM"}"
-MODEL_PATH="${2:-}"
-DATASET_PATH="${3:-}"
-CACHE_PATH="${4:-}"
+MODEL_PATH="${1:-}"
+DATASET_PATH="${2:-}"
+CACHE_PATH="${3:-}"
 
 link_checked() {
   local source_path="$1"
@@ -25,7 +24,6 @@ link_checked() {
 }
 
 mkdir -p "$ROOT_DIR/external"
-link_checked "$BILLM_PATH" "$ROOT_DIR/external/BiLLM"
 [[ -z "$MODEL_PATH" ]] || link_checked "$MODEL_PATH" "$ROOT_DIR/external/models"
 [[ -z "$DATASET_PATH" ]] || link_checked "$DATASET_PATH" "$ROOT_DIR/external/datasets"
-[[ -z "$CACHE_PATH" ]] || link_checked "$CACHE_PATH" "$ROOT_DIR/cache"
+[[ -z "$CACHE_PATH" ]] || link_checked "$CACHE_PATH" "/autodl-fs/data/cclanro/billm-v2-output/cache"

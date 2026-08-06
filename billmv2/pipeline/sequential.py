@@ -93,7 +93,8 @@ def _run_layer(layer: nn.Module, inputs: Tensor, kwargs: dict[str, Any]) -> Tens
         current_kwargs = {
             name: value
             for name, value in kwargs.items()
-            if value is not None and name in {"attention_mask", "position_ids"}
+            if value is not None
+            and name in {"attention_mask", "position_ids", "position_embeddings"}
         }
         outputs[index] = layer(inputs[index].unsqueeze(0), **current_kwargs)[0]
     return outputs

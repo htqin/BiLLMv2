@@ -1,0 +1,3 @@
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights: 100%|██████████| 291/291 [00:00<00:00, 5675.73it/s]
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights: 100%|██████████| 291/291 [00:00<00:00, 4499.35it/s]
+layer 0 | resid_norm 7.1169 corr_norm 2.1912 | cosine -0.0015

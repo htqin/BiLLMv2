@@ -27,7 +27,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifact_dir", required=True)
     parser.add_argument("--model", default="")
-    parser.add_argument("--dataset", choices=["wikitext2", "c4"], default="wikitext2")
+    parser.add_argument("--dataset", choices=["wikitext2", "c4", "ptb"], default="wikitext2")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--max_samples", type=int, default=0)
     args = parser.parse_args()

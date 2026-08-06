@@ -10,11 +10,11 @@ import torch
 
 
 def billm_root() -> Path:
-    """Return the linked, unmodified BiLLM source root."""
+    """Return the vendored, unmodified BiLLM compatibility source root."""
 
     root = Path(__file__).resolve().parents[1] / "external" / "BiLLM"
     if not root.exists():
-        raise FileNotFoundError("run scripts/setup_links.sh before using BiLLM-v2")
+        raise FileNotFoundError("vendored BiLLM sources are missing under external/BiLLM")
     return root
 
 
@@ -33,7 +33,7 @@ def load_model(model_name: str) -> torch.nn.Module:
 
 
 def find_layers(module: torch.nn.Module) -> dict[str, torch.nn.Linear]:
-    """Delegate layer discovery to BiLLM without copying its implementation."""
+    """Delegate layer discovery to the vendored BiLLM implementation."""
 
     root = billm_root()
     sys.path.insert(0, str(root))

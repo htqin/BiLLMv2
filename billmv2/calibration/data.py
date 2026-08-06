@@ -11,14 +11,40 @@ import torch
 
 LOGGER = logging.getLogger(__name__)
 
+CACHE_ROOT = Path("/autodl-fs/data/cclanro/billm-v2-output/cache")
+
+
+def _cache_file(name: str, nsamples: int, seed: int, seqlen: int, model: str) -> Path:
+    """Mirror the vendored datautils.get_loaders cache file naming."""
+
+    return CACHE_ROOT / f"{name}_{nsamples}_{seed}_{seqlen}_{model}.pt"
+
 
 def _import_billm_datautils() -> Any:
     root = Path(__file__).resolve().parents[2] / "external" / "BiLLM"
     if not root.exists():
-        raise FileNotFoundError("external/BiLLM link is missing; run scripts/setup_links.sh")
+        raise FileNotFoundError("vendored BiLLM sources are missing under external/BiLLM")
     sys.path.insert(0, str(root))
     try:
         import datautils
+
+        original_get_loaders = datautils.get_loaders
+
+        def get_loaders(name, nsamples=128, seed=0, seqlen=2048, model=""):
+            cached = _cache_file(name, nsamples, seed, seqlen, model)
+            if cached.exists():
+                return torch.load(cached, weights_only=False)
+            loaders = original_get_loaders(
+                name, nsamples=nsamples, seed=seed, seqlen=seqlen, model=model
+            )
+            cached.parent.mkdir(parents=True, exist_ok=True)
+            torch.save(loaders, cached)
+            stale = Path("cache") / cached.name
+            if stale.exists():
+                stale.unlink()
+            return loaders
+
+        datautils.get_loaders = get_loaders
     finally:
         sys.path.pop(0)
     return datautils
@@ -42,16 +68,15 @@ def get_candidate_pool(
                 dataset, nsamples=candidate_size, seed=seed, seqlen=seqlen, model=model
             )
         except (ConnectionError, FileNotFoundError, OSError):
-            cache_root = Path(__file__).resolve().parents[2] / "external" / "BiLLM" / "cache"
             suffix = f"{model}.pt"
             cached_paths = [
-                path for path in cache_root.rglob("*.pt")
+                path for path in CACHE_ROOT.rglob("*.pt")
                 if dataset in str(path.parent) and str(path).endswith(suffix)
             ]
             if not cached_paths:
                 raise
             LOGGER.warning("using existing token cache fallback: %s", cached_paths[0])
-            train_loader, test_loader = torch.load(cached_paths[0])
+            train_loader, test_loader = torch.load(cached_paths[0], weights_only=False)
             sliced = [
                 (inputs[:, :seqlen], targets[:, :seqlen])
                 for inputs, targets in train_loader[:candidate_size]

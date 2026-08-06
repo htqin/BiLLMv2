@@ -52,8 +52,10 @@ def make_vo_rotation_candidates(
 ) -> list[VoRotation]:
     """Create deterministic per-head V/O rotation candidates."""
 
-    num_heads = int(attention.num_heads)
-    num_kv_heads = int(getattr(attention, "num_key_value_heads", num_heads))
+    num_heads = int(getattr(attention, "num_heads", attention.config.num_attention_heads))
+    num_kv_heads = int(
+        getattr(attention, "num_key_value_heads", getattr(attention.config, "num_key_value_heads", num_heads))
+    )
     head_dim = int(attention.head_dim)
     if context.shape[-1] != num_heads * head_dim:
         raise ValueError("attention context width does not match head geometry")

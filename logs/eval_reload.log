@@ -1,0 +1,38 @@
+2026-08-06 12:51:22,529 | INFO | httpx | HTTP Request: HEAD https://hf-mirror.com/meta-llama/Meta-Llama-3-8B/resolve/main/config.json "HTTP/1.1 200 OK"
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights: 100%|██████████| 291/291 [00:00<00:00, 9967.03it/s]
+2026-08-06 12:51:23,574 | INFO | httpx | HTTP Request: HEAD https://hf-mirror.com/meta-llama/Meta-Llama-3-8B/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+2026-08-06 12:52:33,768 | INFO | __main__ | artifact PPL (wikitext2): 81.571915
+Evaluating ...
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+Perplexity: 81.571915

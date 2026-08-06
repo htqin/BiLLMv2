@@ -319,8 +319,11 @@ def search_block_rotation_low_rank(
         rotation_started = time.perf_counter()
         folded_v, folded_o = fold_vo_weights(
             original_v, original_o, rotation,
-            int(layer.self_attn.num_heads),
-            int(getattr(layer.self_attn, "num_key_value_heads", layer.self_attn.num_heads)),
+            int(getattr(layer.self_attn, "num_heads", layer.self_attn.config.num_attention_heads)),
+            int(getattr(
+                layer.self_attn, "num_key_value_heads",
+                getattr(layer.self_attn.config, "num_key_value_heads", 0),
+            )),
             int(layer.self_attn.head_dim),
         )
         v_result = _candidate_quantizer(quantizers["self_attn.v_proj"], v_module, folded_v, 13)

@@ -13,13 +13,13 @@ pip install torch --index-url https://download.pytorch.org/whl/cu121
 pip install -r requirements.txt
 ```
 
-BiLLMv2 在运行时使用一个未修改的本地 [BiLLM](https://github.com/htqin/BiLLM) checkout 完成层发现和困惑度评估，但不会复制其源码。创建链接，并按需链接本地模型、数据集和 Hugging Face 缓存：
+BiLLMv2 的层发现与困惑度评估依赖的 [BiLLM](https://github.com/htqin/BiLLM) 源码（`datautils.py`、`eval_ppl_utils.py`、`modelutils.py`）已按 MIT 许可原样 vendor 在 `external/BiLLM/` 内并随仓库提交，无需外部 checkout。可选地链接本地模型、数据集和 Hugging Face 缓存：
 
 ```bash
-bash scripts/setup_links.sh ../BiLLM /path/to/models /path/to/datasets /path/to/hf-cache
+bash scripts/setup_links.sh /path/to/models /path/to/datasets /path/to/hf-cache
 ```
 
-该脚本只在本地创建 `external/` 及可选软链接，相关目录已被 Git 忽略。也可以设置 `HF_HOME`，让 Transformers 从正常缓存路径解析模型和数据集。
+该脚本只在本地创建 `external/` 及可选软链接。模型与数据集的 Hugging Face 缓存默认位于 `/autodl-fs/data/cclanro/huggingface`，token 缓存位于 `/autodl-fs/data/cclanro/billm-v2-output/cache`；也可设置 `HF_HOME` 或对应环境变量覆盖。
 
 ## 运行
 
