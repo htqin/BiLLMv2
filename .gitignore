@@ -1,23 +1,4 @@
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.venv/
-venv/
-
-# Runtime-only dependencies and data
-external/
-cache/
-models/
-data/
-outputs/
-logs/
-wandb/
-
-# Model checkpoints and generated artifacts
-*.pt
-*.pth
-*.safetensors
-*.bin
-*.ckpt
-*.log
-*.pid
+__pycache__
+AGENTS.md
+.agents
+.pytest_cache
